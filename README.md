@@ -2,10 +2,6 @@
 
 **DEMO**
 
-https://github.com/user-attachments/assets/e1b2017f-90ed-4136-84c8-cb9b8efaecd1
-
-
-
 **Why this matters**
 - Helps users understand complex insurance documents with clear, grounded answers.
 -Reduces misinterpretation by highlighting relevant terms and conditions instead of guessing.
