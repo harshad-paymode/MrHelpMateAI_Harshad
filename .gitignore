@@ -1,0 +1,15 @@
+chroma_db_helpmateai
+.deepeval
+data
+Generation-Layer-Response
+MrHelpMateAI
+Search-Layer-Response
+*__pycache__
+/*.mp4
+/*.ipynb
+/*.py
+/*.pdf
+/*.csv
+/*.docx
+/*.json
+.env
