@@ -36,12 +36,29 @@ def chain_elements(prompt, llm_gen):
 
 def execute_chain(query, prompt,llm_gen, moderator,block_chain, small_talk, chroma_retriever):
     fallback,normal = chain_elements(prompt,llm_gen)
+
+    moderation_chain = block_chain | RunnableLambda(
+        lambda x: {"flag": "moderation", "response": x}
+    )
+
+    small_talk_chain = small_talk | RunnableLambda(
+        lambda x: {"flag": "small_talk", "response": x}
+    )
+
+    fallback_chain = fallback | RunnableLambda(
+        lambda x: {"flag": "no_results", "response": x}
+    )
+
+    normal_chain = normal | RunnableLambda(
+        lambda x: {"flag": "rag", "response": x}
+    )
+
     chain = RunnableBranch(
         # moderation first
-        (lambda x: not moderator.invoke({"input": x["query"]}), block_chain),
+        (lambda x: not moderator.invoke({"input": x["query"]}), moderation_chain),
 
         # small-talk
-        (lambda x: is_small_talk(x["query"]), small_talk),
+        (lambda x: is_small_talk(x["query"]), small_talk_chain),
 
         # RAG pipeline
         (
@@ -51,9 +68,9 @@ def execute_chain(query, prompt,llm_gen, moderator,block_chain, small_talk, chro
             })
             | RunnableBranch(
                 # if results_df is empty → fallback
-                (lambda x: not x["retrieved"], fallback),
+                (lambda x: not x["retrieved"], fallback_chain),
                 # otherwise → continue normal path
-                normal,
+                normal_chain,
             )
         ),
     )

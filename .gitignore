@@ -8,6 +8,8 @@ Search-Layer-Response
 /*.mp4
 /*.ipynb
 /*.py
+#Track app file
+!app.py
 /*.pdf
 /*.csv
 /*.docx

@@ -19,6 +19,7 @@ def get_retriever():
     search_type = "similarity_score_threshold",
     search_kwargs = {"k":10, "score_threshold":0.55}  #Higher score -> hihger similarity
     )
+    logger.info("Chroma Retriever is Created!")
     return chroma_retriever
 
 def get_generator():
@@ -32,13 +33,17 @@ def get_generator():
                 ChatMistralAI(model = MODELS.MODEL_BACKUP_2, temperature = 0, max_retries=2)
             ]
         )
+    
+    logger.info("LLM Generator is Created!")
     return llm_gen
 
 def get_reranker():
     # Load cross encoder once
     cross_encoder = CrossEncoder(MODELS.MODEL_RERANKER)
+    logger.info("Reranker Created!")
     return cross_encoder
 
 def get_moderator():
     mod_llm = ChatMistralAI(model=MODELS.MODEL_MODERATION)
+    logger.info("Moderator model is created!")
     return mod_llm

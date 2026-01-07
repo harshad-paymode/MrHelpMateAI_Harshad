@@ -1,5 +1,6 @@
 from .core.models import get_reranker
 import pandas as pd
+from .core.logging_config import logger
 
 def format_docs_with_metadata(results):
     results_dict = {}
@@ -29,6 +30,8 @@ def rerank_documents(query, results_df):
     
     results_df = results_df.sort_values(by='Reranked_scores', ascending=False)
     top_3_results = results_df[:3]
+
+    logger.info(f"Chunk Results fetche with size {top_3_results.shape[0]}")
 
     return top_3_results[['Documents','Metadatas']]
 
