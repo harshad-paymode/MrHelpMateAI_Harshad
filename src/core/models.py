@@ -1,26 +1,48 @@
 import os
 
 from sentence_transformers import CrossEncoder
-from langchain_mistralai import MistralAIEmbeddings
-from langchain_chroma import Chroma
 from langchain_mistralai import ChatMistralAI
+from langchain_openai import AzureChatOpenAI
+from deepeval.models.base_model import DeepEvalBaseLLM
 
-from .config import MODELS, PATHS
+from .config import MODELS
 from .logging_config import logger
 
-def get_retriever():
-    embeddings = MistralAIEmbeddings(model=MODELS.MODEL_EMBED)
-    insurance_collection = Chroma(
-    collection_name="collection_insurance",
-    embedding_function=embeddings,
-    persist_directory=PATHS.CHROMA_PERSISTENT,  # Where to save data locally, remove if not necessary
+#set up Azure OpenAI for evaluation
+
+class AzureOpenAI(DeepEvalBaseLLM):
+    def __init__(
+        self,
+        model
+    ):
+        self.model = model
+
+    def load_model(self):
+        return self.model
+
+    def generate(self, prompt: str) -> str:
+        chat_model = self.load_model()
+        return chat_model.invoke(prompt).content
+
+    async def a_generate(self, prompt: str) -> str:
+        chat_model = self.load_model()
+        res = await chat_model.ainvoke(prompt)
+        return res.content
+
+    def get_model_name(self):
+        return "gpt-40"
+
+
+# Replace these with real values
+def get_evaluator():
+    custom_model = AzureChatOpenAI(
+        openai_api_version=os.getenv("OPENAI_API_VERSION"),
+        azure_deployment=os.getenv("OPENAI_MODEL"),
+        azure_endpoint=os.getenv("AZURE_ENDPOINT"),
+        openai_api_key=os.getenv("OPENAI_KEY"),
     )
-    chroma_retriever = insurance_collection.as_retriever(
-    search_type = "similarity_score_threshold",
-    search_kwargs = {"k":10, "score_threshold":0.55}  #Higher score -> hihger similarity
-    )
-    logger.info("Chroma Retriever is Created!")
-    return chroma_retriever
+    azure_openai = AzureOpenAI(model=custom_model)
+    return azure_openai
 
 def get_generator():
     llm_gen = ChatMistralAI(

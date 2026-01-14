@@ -7,7 +7,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
+
 load_dotenv()
+
+#Set up Azure OpenAI for Evaluation
+
 
 @dataclass
 class Models:
@@ -15,7 +19,7 @@ class Models:
     MODEL_BACKUP_1: str = os.getenv("MODEL_BACKUP_1", "")
     MODEL_BACKUP_2: str = os.getenv("MODEL_BACKUP_2", "")
     MODEL_MODERATION: str = os.getenv("MODEL_MODERATION", "open-mistral-nemo")
-    MODEL_API_KEY: str = os.getenv("MODEL_API")
+    MODEL_API_KEY: str = os.getenv("MISTRAL_API")
     MODEL_RERANKER:str = os.getenv("MODEL_RERANKER")
     MODEL_EMBED:str = os.getenv("MODEL_EMBED")
 

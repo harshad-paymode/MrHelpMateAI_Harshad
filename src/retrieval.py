@@ -1,6 +1,9 @@
 from .core.models import get_reranker
 import pandas as pd
 from .core.logging_config import logger
+from langchain_mistralai import MistralAIEmbeddings
+from .core.config import MODELS, PATHS
+from langchain_chroma import Chroma
 
 def format_docs_with_metadata(results):
     results_dict = {}
@@ -12,6 +15,22 @@ def format_docs_with_metadata(results):
 
     results_df = pd.DataFrame(results_dict)
     return results_df
+
+#Chroma Retriever
+def get_retrieved_docs(query):
+    embeddings = MistralAIEmbeddings(model=MODELS.MODEL_EMBED)
+    insurance_collection = Chroma(
+    collection_name="collection_insurance",
+    embedding_function=embeddings,
+    persist_directory=PATHS.CHROMA_PERSISTENT,  # Where to save data locally, remove if not necessary
+    )
+    chroma_retriever = insurance_collection.as_retriever(
+    search_type = "similarity_score_threshold",
+    search_kwargs = {"k":10, "score_threshold":0.55}  #Higher score -> hihger similarity
+    )
+    logger.info("Chroma Retriever is Created!")
+    retrieved_docs = chroma_retriever.invoke(query)
+    return retrieved_docs
 
 
 #These are small neural networks designed for reranking task.

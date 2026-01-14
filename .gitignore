@@ -13,5 +13,5 @@ Search-Layer-Response
 /*.pdf
 /*.csv
 /*.docx
-/*.json
+*.json
 .env

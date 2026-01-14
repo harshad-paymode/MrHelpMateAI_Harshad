@@ -5,3 +5,4 @@ pdfplumber==0.11.8
 PyPDF2==3.0.1
 langchain-community==0.4.1
 pandas==2.3.3
+deepeval==3.3.0
